@@ -246,6 +246,8 @@ func WithNamespaces(daemon *Daemon, c *container.Container) coci.SpecOpts {
 					nsUser.Path = fmt.Sprintf("/proc/%d/ns/user", nc.State.GetPID())
 					setNamespace(s, nsUser)
 				}
+			} else if parts[0] == "netns" {
+				ns.Path = parts[1]
 			} else if c.HostConfig.NetworkMode.IsHost() {
 				ns.Path = c.NetworkSettings.SandboxKey
 			}

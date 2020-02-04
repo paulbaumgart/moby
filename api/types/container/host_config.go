@@ -145,6 +145,21 @@ func (n NetworkMode) ConnectedContainer() string {
 	return ""
 }
 
+// IsNetNS indicates whether container uses a previously created network namespace
+func (n NetworkMode) IsNetNS() bool {
+	parts := strings.SplitN(string(n), ":", 2)
+	return len(parts) > 1 && parts[0] == "netns"
+}
+
+// NetNS indicates a path to a network namespace
+func (n NetworkMode) NetNS() string {
+	parts := strings.SplitN(string(n), ":", 2)
+	if len(parts) > 1 {
+		return parts[1]
+	}
+	return ""
+}
+
 // UserDefined indicates user-created network
 func (n NetworkMode) UserDefined() string {
 	if n.IsUserDefined() {

@@ -21,6 +21,8 @@ func (n NetworkMode) NetworkName() string {
 		return "default"
 	} else if n.IsUserDefined() {
 		return n.UserDefined()
+	} else if n.IsNetNS() {
+		return n.NetNS()
 	}
 	return ""
 }
@@ -37,5 +39,5 @@ func (n NetworkMode) IsHost() bool {
 
 // IsUserDefined indicates user-created network
 func (n NetworkMode) IsUserDefined() bool {
-	return !n.IsDefault() && !n.IsBridge() && !n.IsHost() && !n.IsNone() && !n.IsContainer()
+	return !n.IsDefault() && !n.IsBridge() && !n.IsHost() && !n.IsNone() && !n.IsContainer() && !n.IsNetNS()
 }

@@ -459,7 +459,7 @@ func (daemon *Daemon) updateContainerNetworkSettings(container *container.Contai
 	var n libnetwork.Network
 
 	mode := container.HostConfig.NetworkMode
-	if container.Config.NetworkDisabled || mode.IsContainer() {
+	if container.Config.NetworkDisabled || mode.IsContainer() || mode.IsNetNS() {
 		return
 	}
 
@@ -539,7 +539,7 @@ func (daemon *Daemon) allocateNetwork(container *container.Container) error {
 		logrus.Errorf("failed to cleanup up stale network sandbox for container %s", container.ID)
 	}
 
-	if container.Config.NetworkDisabled || container.HostConfig.NetworkMode.IsContainer() {
+	if container.Config.NetworkDisabled || container.HostConfig.NetworkMode.IsContainer() || container.HostConfig.NetworkMode.IsNetNS() {
 		return nil
 	}
 
@@ -731,7 +731,7 @@ func (daemon *Daemon) updateNetworkConfig(container *container.Container, n libn
 
 func (daemon *Daemon) connectToNetwork(container *container.Container, idOrName string, endpointConfig *networktypes.EndpointSettings, updateSettings bool) (err error) {
 	start := time.Now()
-	if container.HostConfig.NetworkMode.IsContainer() {
+	if container.HostConfig.NetworkMode.IsContainer() || container.HostConfig.NetworkMode.IsNetNS() {
 		return runconfig.ErrConflictSharedNetwork
 	}
 	if containertypes.NetworkMode(idOrName).IsBridge() &&
@@ -1012,7 +1012,7 @@ func (daemon *Daemon) releaseNetwork(container *container.Container) {
 	if daemon.netController == nil {
 		return
 	}
-	if container.HostConfig.NetworkMode.IsContainer() || container.Config.NetworkDisabled {
+	if container.HostConfig.NetworkMode.IsContainer() || container.HostConfig.NetworkMode.IsNetNS() || container.Config.NetworkDisabled {
 		return
 	}
 
